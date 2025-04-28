@@ -2,6 +2,7 @@ import debounce from "lodash.debounce";
 import { event as gaEvent } from "nextjs-google-analytics";
 import { toast } from "react-hot-toast";
 import { create } from "zustand";
+import { dataExample } from "../data/anchor/dataExample";
 import { FileFormat } from "../enums/file.enum";
 import useGraph from "../features/editor/views/GraphView/stores/useGraph";
 import { isIframe } from "../lib/utils/helpers";
@@ -9,41 +10,7 @@ import { contentToJson, jsonToContent } from "../lib/utils/jsonAdapter";
 import useConfig from "./useConfig";
 import useJson from "./useJson";
 
-const defaultJson = JSON.stringify(
-  {
-    fruits: [
-      {
-        name: "Apple",
-        color: "Red",
-        nutrients: {
-          calories: 52,
-          fiber: "2.4g",
-          vitaminC: "4.6mg",
-        },
-      },
-      {
-        name: "Banana",
-        color: "Yellow",
-        nutrients: {
-          calories: 89,
-          fiber: "2.6g",
-          potassium: "358mg",
-        },
-      },
-      {
-        name: "Orange",
-        color: "Orange",
-        nutrients: {
-          calories: 47,
-          fiber: "2.4g",
-          vitaminC: "53.2mg",
-        },
-      },
-    ],
-  },
-  null,
-  2
-);
+const defaultJson = JSON.stringify(dataExample, null, 2);
 
 type SetContents = {
   contents?: string;
