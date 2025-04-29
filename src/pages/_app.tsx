@@ -12,6 +12,7 @@ import GlobalStyle from "../constants/globalStyle";
 import { SEO } from "../constants/seo";
 import { lightTheme } from "../constants/theme";
 import { smartColorSchemeManager } from "../lib/utils/mantineColorScheme";
+import '../index.css'
 
 const theme = createTheme({
   autoContrast: true,
