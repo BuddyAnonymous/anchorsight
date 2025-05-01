@@ -15,4 +15,4 @@
 
 ## About the Project
 
-<img width="100%" alt="booking-screen" src="./public/assets/editor.webp">
+<img width="100%" alt="booking-screen" src="./public/assets/demo.png">
