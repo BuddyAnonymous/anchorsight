@@ -1,11 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { LoadingOverlay } from "@mantine/core";
 import styled from "styled-components";
 import Editor, { type EditorProps, loader, type OnMount, useMonaco } from "@monaco-editor/react";
 import useConfig from "../../store/useConfig";
 import useFile from "../../store/useFile";
 import FileTree from "./FileTree";
-import { accountTypesExample as filesData } from "../../data/anchor/accountTypesExample";
+// import { accountTypesExample as filesData } from "../../data/anchor/accountTypesExample";
 import { dataExample } from "../../data/anchor/dataExample";
 
 loader.config({
@@ -25,25 +25,74 @@ const editorOptions: EditorProps["options"] = {
 };
 
 const TextEditor = () => {
-  const defaultFolder = {
-    id: Date.now(),
-    type: "folder",
-    name: "welcome",
-    children: [],
-  };
-  const [fileTree, setFileTree] = useState(filesData || defaultFolder);
+  const [fileTree, setFileTree] = useState([]);
   const monaco = useMonaco();
   const contents = useFile(state => state.contents);
-  const [allAccountData, setAllAccountData] = useState({
-    MintInfo: structuredClone(dataExample),
-  });
+  const [allAccountData, setAllAccountData] = useState({});
   const setContents = useFile(state => state.setContents);
-  const [accountTypes, setAccountTypes] = useState(filesData)
+  const [accountTypes, setAccountTypes] = useState([]);
   const setError = useFile(state => state.setError);
   const jsonSchema = useFile(state => state.jsonSchema);
   const getHasChanges = useFile(state => state.getHasChanges);
   const theme = useConfig(state => (state.darkmodeEnabled ? "vs-dark" : "light"));
   const fileType = useFile(state => state.format);
+
+  useEffect(() => {
+    const getAccountTypes = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/get-account-types");
+        if (!res.ok) throw new Error("Failed to fetch");
+        const data =(await res.json()).accountTypes;
+        setFileTree(data);
+        setAccountTypes(data);
+      } catch (error) {
+        console.error("Error fetching file tree:", error);
+      }
+    };
+
+    getAccountTypes();
+  }, []);
+
+  useEffect(() => {
+
+    function lowercaseFirstLetter(str: string): string {
+      if (!str) return '';
+      return str.charAt(0).toLowerCase() + str.slice(1);
+    }
+
+    const fetchData = async () => {
+      try {
+        // 1. build an array of Promises, one per key
+        const promises = Object.keys(accountTypes).map(async (key) => {
+          const res = await fetch(
+            `/api/fetch-accounts?accountType=${lowercaseFirstLetter(key)}`
+          );
+          if (!res.ok) {
+            throw new Error(`Failed to fetch accounts for ${key}`);
+          }
+          const json = await res.json();
+          return [key, json.data] as [string, any[]];
+        });
+
+        // 2. wait for all to resolve
+        const entries = await Promise.all(promises);
+
+        // 3. convert to an object { key: data, ... }
+        const result = Object.fromEntries(entries);
+
+        // 4. update state once
+        setAllAccountData(result);
+      } catch (error) {
+        console.error("Error fetching file tree:", error);
+      }
+    };
+
+    if (accountTypes.length === 0) {
+      return
+    };
+
+    fetchData();
+  }, [accountTypes]);
 
   React.useEffect(() => {
     monaco?.languages.json.jsonDefaults.setDiagnosticsOptions({
@@ -87,33 +136,33 @@ const TextEditor = () => {
   }, []);
 
   return (
-        <>
-          <main className="w-full flex flex-col h-dvh overflow-hidden">
-            <section className="w-full h-full flex max-h-full">
-              <div className="min-w-80 border-r border-r-vsdark-3 flex flex-col fixWidth">
-                <div className="px-4 py-2 border-b border-b-vsdark-3">
-                  <h3 className="text-xxs uppercase text-vsdark-4">Explorer</h3>
-                </div>
-                <div className="p-2 overflow-auto h-full">
-                  {Object.keys(fileTree).map((key) => (
-                    <FileTree
-                      key={key}
-                      keyName={key}
-                      fileTree={fileTree[key]}
-                      isArrowShown={true}
-                      isCheckBoxShown={false}
-                      setAccountTypes={setAccountTypes}
-                      currentPath={[key]}
-                      accountTypes={accountTypes}
-                      allAccountData={allAccountData}
-                      setAllAccountData={setAllAccountData}
-                    />
-                  ))}
-                </div>
-              </div>
-            </section>
-          </main>
-        </>
+    <>
+      <main className="w-full flex flex-col h-dvh overflow-hidden">
+        <section className="w-full h-full flex max-h-full">
+          <div className="min-w-80 border-r border-r-vsdark-3 flex flex-col fixWidth">
+            <div className="px-4 py-2 border-b border-b-vsdark-3">
+              <h3 className="text-xxs uppercase text-vsdark-4">Explorer</h3>
+            </div>
+            <div className="p-2 overflow-auto h-full">
+              {Object.keys(fileTree).map((key) => (
+                <FileTree
+                  key={key}
+                  keyName={key}
+                  fileTree={fileTree[key]}
+                  isArrowShown={true}
+                  isCheckBoxShown={false}
+                  setAccountTypes={setAccountTypes}
+                  currentPath={[key]}
+                  accountTypes={accountTypes}
+                  allAccountData={allAccountData}
+                  setAllAccountData={setAllAccountData}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+    </>
   );
 };
 

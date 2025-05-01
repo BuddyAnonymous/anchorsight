@@ -49,12 +49,12 @@ export const Toolbar = () => {
   return (
     <StyledTools>
       <Group gap="xs" justify="left" w="100%" style={{ flexWrap: "nowrap" }}>
-        <StyledToolElement title="JSON Crack">
+        <StyledToolElement title="AnchorSight">
           <Flex gap="xs" align="center" justify="center">
-            <JSONCrackLogo fontSize="0.8rem" hideLogo />
+            <JSONCrackLogo fontSize="1rem" hideLogo />
           </Flex>
         </StyledToolElement>
-        <Select
+        {/* <Select
           defaultValue="json"
           size="xs"
           value={format}
@@ -63,14 +63,14 @@ export const Toolbar = () => {
           w={120}
           data={formats}
           allowDeselect={false}
-        />
+        /> */}
 
-        <FileMenu />
+        {/* <FileMenu />
         <ViewMenu />
-        <ToolsMenu />
+        <ToolsMenu /> */}
       </Group>
       <Group gap="xs" justify="right" w="100%" style={{ flexWrap: "nowrap" }}>
-        <Button
+        {/* <Button
           component={Link}
           href="https://todiagram.com/editor?utm_source=jsoncrack&utm_medium=toolbar"
           target="_blank"
@@ -85,8 +85,8 @@ export const Toolbar = () => {
           leftSection={<FaFireFlameCurved />}
         >
           NEW! JSON Crack v2.0
-        </Button>
-        <Link href="https://github.com/AykutSarac/jsoncrack.com" rel="noopener" target="_blank">
+        </Button> */}
+        <Link href="https://github.com/BuddyAnonymous/anchorsight" rel="noopener" target="_blank">
           <StyledToolElement title="GitHub">
             <FaGithub size="18" />
           </StyledToolElement>

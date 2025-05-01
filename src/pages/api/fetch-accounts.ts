@@ -28,6 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // res.status(200).json({ data: fileContents });
 
     const allFetched = await getAnchorData(fileContents, RPC_URL, accountType);
+    fixReserved(allFetched);
 
     // MOCK DATA
     res.status(200).json({
@@ -36,6 +37,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (error) {
     console.error("Error reading IDL file:", error);
     res.status(500).json({ error: "Failed to read IDL file" });
+  }
+}
+
+function fixReserved(obj) {
+  if (Array.isArray(obj)) {
+    obj.forEach(fixReserved);
+  } else if (obj && typeof obj === 'object' && obj['reserved'] !== null && obj['reserved'] !== undefined) {
+    obj.reserved = "No. of reserved elements: " + obj.reserved.length;
+    Object.values(obj).forEach(fixReserved);
   }
 }
 
@@ -57,11 +67,10 @@ async function getAnchorData(idl: string, rpcUrl: string, accountType: string) {
   const allAccounts = await client.all(); // Array<{ publicKey; account }>
   const cleaned = allAccounts.map(({ publicKey, account }) => ({
     publicKey: publicKey.toBase58(),
-    ...account,
+    ...account, 
   }));
 
-  console.log("cleaned", cleaned);
-  return cleaned.slice(0, 10); // Limit to 10 for testing
+  return cleaned.slice(0, 5); // Limit to 10 for testing
 
   // // 1. Get [name, client] pairs for every account type
   // const entries = Object.entries(program.account) as Array<

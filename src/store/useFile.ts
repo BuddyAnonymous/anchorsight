@@ -10,7 +10,7 @@ import { contentToJson, jsonToContent } from "../lib/utils/jsonAdapter";
 import useConfig from "./useConfig";
 import useJson from "./useJson";
 
-const defaultJson = JSON.stringify(dataExample, null, 2);
+const defaultJson = "";
 
 type SetContents = {
   contents?: string;

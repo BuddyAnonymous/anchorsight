@@ -50,6 +50,11 @@ function FileTree({ fileTree, keyName, isArrowShown, isCheckBoxShown, setAccount
     }
   }, [isRenaming.showInput]);
 
+  const handleArrowRightClick = (e) => {
+    e.stopPropagation();
+    console.log("BLABLABLA",allAccountData[keyName],keyName)
+    setContents({ contents: JSON.stringify(allAccountData[keyName], null, 2), format: FileFormat.JSON });
+  }
   const handleKebabClick = (e) => {
     e.stopPropagation();
     setIsVisible(!isVisible);
@@ -191,7 +196,7 @@ function FileTree({ fileTree, keyName, isArrowShown, isCheckBoxShown, setAccount
         <div className="relative">
           {isArrowShown ? <button
             ref={buttonRef}
-            onClick={handleKebabClick}
+            onClick={handleArrowRightClick}
             className={`p-1 rounded flex items-center justify-center hover:bg-vsdark-4/50 hover:text-vsdark-6 focus:bg-vsdark-4/50 focus:text-vsdark-6 ${showOptions ? "visible" : "invisible"
               }`}
           >
