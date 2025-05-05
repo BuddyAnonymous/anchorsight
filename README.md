@@ -18,7 +18,7 @@
 ### Demo video: https://www.loom.com/share/6c16da2fb47546e4af46c063f3a0e2ff?sid=52a57855-e057-4ff1-8cc4-dc2ddb95e4c2
 
 
-<img width="100%" alt="booking-screen" src="./public/assets/editor.webp">
+<img width="100%" alt="booking-screen" src="./public/assets/demo.png">
 
 ## How to run project
 
