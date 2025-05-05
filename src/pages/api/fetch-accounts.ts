@@ -28,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // res.status(200).json({ data: fileContents });
 
     const allFetched = await getAnchorData(fileContents, RPC_URL, accountType);
-    fixReserved(allFetched);
+    fixArrays(allFetched);
 
     // MOCK DATA
     res.status(200).json({
@@ -40,12 +40,46 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-function fixReserved(obj) {
+function fixArrays(obj) {
   if (Array.isArray(obj)) {
-    obj.forEach(fixReserved);
-  } else if (obj && typeof obj === 'object' && obj['reserved'] !== null && obj['reserved'] !== undefined) {
-    obj.reserved = "No. of reserved elements: " + obj.reserved.length;
-    Object.values(obj).forEach(fixReserved);
+    // Compress trailing runs for this array
+    compressTrailingRuns(obj);
+    // Recurse into each element
+    obj.forEach(fixArrays);
+
+  } else if (obj && typeof obj === 'object') {
+    // Traverse each property
+    for (const [key, value] of Object.entries(obj)) {
+      // Skip compressing `reserved` fields
+      if (key !== 'reserved' && Array.isArray(value)) {
+        compressTrailingRuns(value);
+      }
+      // Recurse into value
+      fixArrays(value);
+    }
+  }
+}
+
+function compressTrailingRuns(arr) {
+  if (!Array.isArray(arr) || arr.length === 0) return;
+
+  const last = arr[arr.length - 1];
+  let count = 1;
+
+  // Count how many times `last` repeats at the end
+  for (let i = arr.length - 2; i >= 0; --i) {
+    if (arr[i] === last) {
+      count++;
+    } else {
+      break;
+    }
+  }
+
+  // If more than one repetition, replace the run with a single compressed entry
+  if (count > 1) {
+    const label = `${last} x${count}`;
+    // Remove the repeated entries and push the compressed label
+    arr.splice(arr.length - count, count, label);
   }
 }
 
