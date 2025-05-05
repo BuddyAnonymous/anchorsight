@@ -141,7 +141,7 @@ const TextEditor = () => {
         <section className="w-full h-full flex max-h-full">
           <div className="min-w-80 border-r border-r-vsdark-3 flex flex-col fixWidth">
             <div className="px-4 py-2 border-b border-b-vsdark-3">
-              <h3 className="text-xxs uppercase text-vsdark-4">Explorer</h3>
+              <h3 className="text-xxs uppercase text-vsdark-4">Account type explorer</h3>
             </div>
             <div className="p-2 overflow-auto h-full">
               {Object.keys(fileTree).map((key) => (

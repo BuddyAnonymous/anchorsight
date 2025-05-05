@@ -1,13 +1,22 @@
 /* eslint-disable react/prop-types */
+import { useState, useEffect, useRef } from "react";
 import { ChevronRightIcon, FileIcon, ArrowRightIcon } from "@primer/octicons-react";
 import { Circle, CircleDot } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
 import useFile from "../../store/useFile";
 import { dataExample } from "../../data/anchor/dataExample";
 import { FileFormat } from "../../enums/file.enum";
 
-function FileTree({ fileTree, keyName, isArrowShown, isCheckBoxShown, setAccountTypes, accountTypes, currentPath, allAccountData, setAllAccountData }) {
-
+function FileTree({
+  fileTree,
+  keyName,
+  isArrowShown,
+  isCheckBoxShown,
+  setAccountTypes,
+  accountTypes,
+  currentPath,
+  allAccountData,
+  setAllAccountData,
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -28,7 +37,12 @@ function FileTree({ fileTree, keyName, isArrowShown, isCheckBoxShown, setAccount
   const buttonRef = useRef(null);
 
   const handleRenameSubmit = () => {
-    if (isRenaming.id && isRenaming.newName && isRenaming.name !== isRenaming.newName && isRenaming.newName.trim() !== "") {
+    if (
+      isRenaming.id &&
+      isRenaming.newName &&
+      isRenaming.name !== isRenaming.newName &&
+      isRenaming.newName.trim() !== ""
+    ) {
       handleRename(isRenaming.id, isRenaming.newName);
     }
     setIsRenaming({
@@ -50,15 +64,18 @@ function FileTree({ fileTree, keyName, isArrowShown, isCheckBoxShown, setAccount
     }
   }, [isRenaming.showInput]);
 
-  const handleArrowRightClick = (e) => {
+  const handleArrowRightClick = e => {
     e.stopPropagation();
-    console.log("BLABLABLA",allAccountData[keyName],keyName)
-    setContents({ contents: JSON.stringify(allAccountData[keyName], null, 2), format: FileFormat.JSON });
-  }
-  const handleKebabClick = (e) => {
+    console.log("BLABLABLA", allAccountData[keyName], keyName);
+    setContents({
+      contents: JSON.stringify(allAccountData[keyName], null, 2),
+      format: FileFormat.JSON,
+    });
+  };
+  const handleKebabClick = e => {
     e.stopPropagation();
     setIsVisible(!isVisible);
-    let accountTypesNew = JSON.parse(JSON.stringify(accountTypes)); // deep copy
+    const accountTypesNew = JSON.parse(JSON.stringify(accountTypes)); // deep copy
     let helpObject = accountTypesNew;
     let parent = null;
     let key = null;
@@ -101,7 +118,7 @@ function FileTree({ fileTree, keyName, isArrowShown, isCheckBoxShown, setAccount
       let allAccountDataHelper = allAccountData;
       allAccountDataHelper = allAccountDataHelper[currentPath[0]];
       allAccountDataHelper.forEach((item, index) => {
-        let newAllAccountDataHelper = allAccountDataHelper[index]
+        let newAllAccountDataHelper = allAccountDataHelper[index];
         for (let i = 1; i < currentPath.length; i++) {
           if (i === currentPath.length - 1) {
             delete newAllAccountDataHelper[snakeToCamel(currentPath[i].name)];
@@ -111,28 +128,35 @@ function FileTree({ fileTree, keyName, isArrowShown, isCheckBoxShown, setAccount
         }
       });
       setAccountTypes(accountTypesNew);
-      setContents({ contents: JSON.stringify(allAccountDataHelper, null, 2), format: FileFormat.JSON });
+      setContents({
+        contents: JSON.stringify(allAccountDataHelper, null, 2),
+        format: FileFormat.JSON,
+      });
     }
     else if (currentPath.length > 0) {
       let allAccountDataHelper = allAccountData;
       allAccountDataHelper = allAccountDataHelper[snakeToCamel(currentPath[0])];
       let dataExampleHelper = structuredClone(dataExample);
       allAccountDataHelper.forEach((item, index) => {
-        let newAllAccountDataHelper = allAccountDataHelper[index]
+        let newAllAccountDataHelper = allAccountDataHelper[index];
         for (let i = 1; i < currentPath.length; i++) {
           if (i === currentPath.length - 1) {
-            newAllAccountDataHelper[snakeToCamel(currentPath[i].name)] = dataExampleHelper[index][snakeToCamel(currentPath[i].name)];
+            newAllAccountDataHelper[snakeToCamel(currentPath[i].name)] =
+              dataExampleHelper[index][snakeToCamel(currentPath[i].name)];
             break;
           }
           newAllAccountDataHelper = newAllAccountDataHelper[snakeToCamel(currentPath[i].name)];
           dataExampleHelper = dataExampleHelper[snakeToCamel(currentPath[i].name)];
         }
       });
-      setContents({ contents: JSON.stringify(allAccountDataHelper, null, 2), format: FileFormat.JSON });
+      setContents({
+        contents: JSON.stringify(allAccountDataHelper, null, 2),
+        format: FileFormat.JSON,
+      });
     }
-  }
+  };
 
-  const handleSubmission = (e) => {
+  const handleSubmission = e => {
     e.preventDefault();
     const form = new FormData(e.target);
     const name = form.get("name");
@@ -157,22 +181,22 @@ function FileTree({ fileTree, keyName, isArrowShown, isCheckBoxShown, setAccount
         onClick={() => setIsExpanded(!isExpanded)}
         className="relative text-xs flex select-none cursor-pointer items-center justify-between gap-6 py-1 px-2 pr-1 text-vsdark-5 rounded hover:bg-vsdark-4/20 hover:text-vsdark-6"
       >
-        <div className="flex items-center gap-1.5 flex-1">
+        <div className={`flex items-center gap-1.5 flex-1 text-base ${isArrowShown ? "font-semibold" : ""}`}>
           <span className={`${isExpanded ? "transform rotate-90" : ""} flex items-center`}>
             {typeof fileTree == "object" ? <ChevronRightIcon size={12} /> : null}
           </span>
-          <span className="-mt-[0.5px]">
+          <span className="-mt-[0px]">
             {isRenaming.showInput && isRenaming.id === fileTree.id ? (
               <input
                 ref={inputRef}
                 className="w-full h-full border-0 bg-black outline-0 px-0 py-1"
                 defaultValue={fileTree.name}
-                onChange={(e) => setIsRenaming({ ...isRenaming, newName: e.target.value })}
+                onChange={e => setIsRenaming({ ...isRenaming, newName: e.target.value })}
                 onBlur={() => {
                   handleRenameSubmit();
                   setIsRenaming({ showInput: false, id: null });
                 }}
-                onKeyDown={(e) => {
+                onKeyDown={e => {
                   if (e.key === "Enter") {
                     handleRenameSubmit();
                   }
@@ -190,19 +214,26 @@ function FileTree({ fileTree, keyName, isArrowShown, isCheckBoxShown, setAccount
             className={`p-1 rounded flex items-center justify-center hover:bg-vsdark-4/50 hover:text-vsdark-6 visible moreRounded
               }`}
           >
-            {isCheckBoxShown ? isVisible ? <CircleDot size={10} className="items-center justify-center flex" /> : <Circle size={10} /> : null}
+            {isCheckBoxShown ? (
+              isVisible ? (
+                <CircleDot size={10} className="items-center justify-center flex" />
+              ) : (
+                <Circle size={10} />
+              )
+            ) : null}
           </button>
         </div>
         <div className="relative">
-          {isArrowShown ? <button
-            ref={buttonRef}
-            onClick={handleArrowRightClick}
-            className={`p-1 rounded flex items-center justify-center hover:bg-vsdark-4/50 hover:text-vsdark-6 focus:bg-vsdark-4/50 focus:text-vsdark-6 ${showOptions ? "visible" : "invisible"
-              }`}
-          >
-            <ArrowRightIcon size={10} />
-          </button> : null
-          }
+          {isArrowShown ? (
+            <button
+              ref={buttonRef}
+              onClick={handleArrowRightClick}
+              className={`p-1 rounded flex items-center justify-center hover:bg-vsdark-4/50 hover:text-vsdark-6 focus:bg-vsdark-4/50 focus:text-vsdark-6 ${showOptions ? "visible" : "invisible"
+                }`}
+            >
+              <ArrowRightIcon size={10} />
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -222,19 +253,30 @@ function FileTree({ fileTree, keyName, isArrowShown, isCheckBoxShown, setAccount
               />
             </form>
           )}
-          {fileTree.fields != undefined && fileTree.fields.map((elem) => (
-            <FileTree
-              keyName={elem.type.kind == undefined ? typeof elem.type == "object" ? elem.type.vec != undefined ? elem.name + " (Vec<" + elem.type.vec.name + ">)" : elem.name + " ([" + elem.type.array[0] + ";" + elem.type.array[1] + "])" : elem.name + " (" + elem.type + ")" : elem.name}
-              fileTree={typeof elem.type === "object" && elem.type.kind != undefined ? elem.type : ""}
-              isArrowShown={false}
-              isCheckBoxShown={true}
-              setAccountTypes={setAccountTypes}
-              currentPath={currentPath.concat(elem)}
-              accountTypes={accountTypes}
-              allAccountData={allAccountData}
-              setAllAccountData={setAllAccountData}
-            />
-          ))}
+          {fileTree.fields != undefined &&
+            fileTree.fields.map(elem => (
+              <FileTree
+                keyName={
+                  elem.type.kind == undefined
+                    ? typeof elem.type == "object"
+                      ? elem.type.vec != undefined
+                        ? elem.name + " (Vec<" + elem.type.vec.name + ">)"
+                        : elem.name + " ([" + elem.type.array[0] + ";" + elem.type.array[1] + "])"
+                      : elem.name + " (" + elem.type + ")"
+                    : elem.name
+                }
+                fileTree={
+                  typeof elem.type === "object" && elem.type.kind != undefined ? elem.type : ""
+                }
+                isArrowShown={false}
+                isCheckBoxShown={true}
+                setAccountTypes={setAccountTypes}
+                currentPath={currentPath.concat(elem)}
+                accountTypes={accountTypes}
+                allAccountData={allAccountData}
+                setAllAccountData={setAllAccountData}
+              />
+            ))}
         </div>
       )}
     </>
@@ -245,7 +287,7 @@ function DropdownMenu({ isOpen, onClose, type, onItemClick, fileTreeId, fileTree
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         onClose();
       }
@@ -260,7 +302,7 @@ function DropdownMenu({ isOpen, onClose, type, onItemClick, fileTreeId, fileTree
     };
   }, [isOpen, onClose]);
 
-  const handleClick = (action) => (e) => {
+  const handleClick = action => e => {
     e.stopPropagation();
     onItemClick(action, fileTreeId, fileTreeName);
     onClose();
@@ -269,7 +311,10 @@ function DropdownMenu({ isOpen, onClose, type, onItemClick, fileTreeId, fileTree
   if (!isOpen) return null;
 
   return (
-    <div ref={dropdownRef} className="absolute -right-1 top-7 shadow-xl min-w-48 bg-vsdark-3 backdrop-blur-3xl z-10 rounded">
+    <div
+      ref={dropdownRef}
+      className="absolute -right-1 top-7 shadow-xl min-w-48 bg-vsdark-3 backdrop-blur-3xl z-10 rounded"
+    >
       {type === "folder" && (
         <div className="flex flex-col p-1.5 gap-1">
           <button

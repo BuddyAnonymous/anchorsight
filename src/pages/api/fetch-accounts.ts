@@ -70,6 +70,8 @@ async function getAnchorData(idl: string, rpcUrl: string, accountType: string) {
     ...account, 
   }));
 
+  console.log("cleaned", cleaned.slice(0, 5));
+
   return cleaned.slice(0, 5); // Limit to 10 for testing
 
   // // 1. Get [name, client] pairs for every account type
